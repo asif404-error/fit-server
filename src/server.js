@@ -13,6 +13,8 @@ const bookingRoutes = require("./routes/booking.routes");
 const forumRoutes = require("./routes/forum.routes");
 const paymentRoutes = require("./routes/payment.routes");
 const trainerApplicationRoutes = require("./routes/trainerApplication.routes");
+const favoriteRoutes = require("./routes/favorite.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 dotenv.config();
 
@@ -28,15 +30,12 @@ app.use(
 
 app.use(cookieParser());
 
-// Better Auth handler (must be before express.json())
 app.all("/api/auth/*splat", (req, res) => {
   const auth = getAuth();
   return toNodeHandler(auth)(req, res);
 });
 
 app.use(express.json());
-
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/classes", classRoutes);
@@ -44,13 +43,14 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/forum", forumRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/trainer-applications", trainerApplicationRoutes);
+app.use("/api/users/favorites", favoriteRoutes);
+app.use("/api/notifications", notificationRoutes);
 
-// Health check
+
 app.get("/", (req, res) => {
   res.send("FitNexus Server is running ✅");
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error("❌ Error:", err.message);
   res.status(err.status || 500).json({
